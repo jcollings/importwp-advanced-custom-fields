@@ -16,8 +16,14 @@ class AdvancedCustomFields
     public function __construct(EventHandler $event_handler)
     {
         $event_handler;
+        $event_handler->listen('importer.custom_fields.init', [$this, 'init']);
         $event_handler->listen('importer.custom_fields.get_fields', [$this, 'get_fields']);
         $event_handler->listen('importer.custom_fields.process_field', [$this, 'process_field']);
+    }
+
+    public function init($result, $custom_fields)
+    {
+        $this->custom_fields = $custom_fields;
     }
 
     public function get_acf_fields($args)
