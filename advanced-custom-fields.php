@@ -14,7 +14,7 @@ add_action('admin_init', 'iwp_acf_check');
 
 function iwp_acf_requirements_met()
 {
-    return false === (is_admin() && current_user_can('activate_plugins') &&  (!function_exists('wpseo_init') || !function_exists('import_wp_pro') || version_compare(IWP_VERSION, '2.0.22', '<')));
+    return false === (is_admin() && current_user_can('activate_plugins') &&  (!class_exists('ACF') || !function_exists('import_wp_pro') || version_compare(IWP_VERSION, '2.0.22', '<')));
 }
 
 function iwp_acf_check()
