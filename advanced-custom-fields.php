@@ -5,7 +5,7 @@
  * Plugin URI: https://www.importwp.com
  * Description: Allow ImportWP to import Advanced Custom Fields.
  * Author: James Collings <james@jclabs.co.uk>
- * Version: 2.0.1
+ * Version: 2.0.2 
  * Author URI: https://www.importwp.com
  * Network: True
  */
@@ -14,7 +14,7 @@ add_action('admin_init', 'iwp_acf_check');
 
 function iwp_acf_requirements_met()
 {
-    return false === (is_admin() && current_user_can('activate_plugins') &&  (!class_exists('ACF') || !function_exists('import_wp_pro') || version_compare(IWP_VERSION, '2.0.22', '<')));
+    return false === (is_admin() && current_user_can('activate_plugins') &&  (!class_exists('ACF') || !function_exists('import_wp_pro') || version_compare(IWP_VERSION, '2.0.23', '<')));
 }
 
 function iwp_acf_check()
@@ -47,6 +47,6 @@ add_action('plugins_loaded', 'iwp_acf_setup', 9);
 function iwp_acf_notice()
 {
     echo '<div class="error">';
-    echo '<p><strong>ImportWP - Advanced Custom Fields Importer Addon</strong> requires that you have <strong>ImportWP PRO v2.0.22 or newer</strong>, and <strong>Advanced Custom Fields</strong> installed.</p>';
+    echo '<p><strong>ImportWP - Advanced Custom Fields Importer Addon</strong> requires that you have <strong>ImportWP PRO v2.0.23 or newer</strong>, and <strong>Advanced Custom Fields</strong> installed.</p>';
     echo '</div>';
 }

@@ -19,6 +19,8 @@ class AdvancedCustomFields
         $event_handler->listen('importer.custom_fields.init', [$this, 'init']);
         $event_handler->listen('importer.custom_fields.get_fields', [$this, 'get_fields']);
         $event_handler->listen('importer.custom_fields.process_field', [$this, 'process_field']);
+
+        add_filter('iwp/custom_field_key', [$this, 'get_custom_field_key'], 10, 3);
     }
 
     public function init($result, $custom_fields)
@@ -135,7 +137,7 @@ class AdvancedCustomFields
     public function process_field($result, $post_id, $key, $value, $custom_field_record, $prefix, $importer_model, $custom_field)
     {
         if (strpos($key, 'acf_field::') !== 0) {
-            return;
+            return $result;
         }
 
         switch ($importer_model->getTemplate()) {
@@ -152,9 +154,32 @@ class AdvancedCustomFields
         }
 
         $field_key = substr($key, strrpos($key, '::') + strlen('::'));
-        $result = $this->process($post_id, $field_key, $value, $custom_field_record, $prefix);
-        if ($result) {
-            $custom_field->virtual_fields[$field_key] = $result;
+        $processed = $this->process($post_id, $field_key, $value, $custom_field_record, $prefix);
+        if ($processed) {
+            $custom_field->virtual_fields[$field_key] = $processed;
         }
+
+        return $result;
+    }
+
+    /**
+     * @param string $key
+     * @param TemplateInterface $template
+     * @param ImporterModel $importer
+     * @return string
+     */
+    public function get_custom_field_key($key, $template, $importer)
+    {
+        if (strpos($key, 'acf_field::') !== 0) {
+            return $key;
+        }
+
+        $field_key = substr($key, strrpos($key, '::') + strlen('::'));
+        $field_obj = get_field_object($field_key);
+        if ($field_obj) {
+            return $field_obj['name'];
+        }
+
+        return $key;
     }
 }
