@@ -66,12 +66,17 @@ class AdvancedCustomFields
                 $fields = array_merge($fields, $this->get_acf_fields(['user_form' => 'all']));
                 break;
             case 'term':
-                $taxonomy = $importer_model->getSetting('taxonomy');
-                $fields = array_merge($fields, $this->get_acf_fields(['taxonomy' => $taxonomy]));
+                $taxonomies = (array)$importer_model->getSetting('taxonomy');
+                foreach ($taxonomies as $taxonomy) {
+                    $fields = array_merge($fields, $this->get_acf_fields(['taxonomy' => $taxonomy]));
+                }
                 break;
             default:
-                $post_type = $importer_model->getSetting('post_type');
-                $fields = array_merge($fields, $this->get_acf_fields(['post_type' => $post_type]));
+                // Handle templates with multiple post_types
+                $post_types = (array)$importer_model->getSetting('post_type');
+                foreach ($post_types as $post_type) {
+                    $fields = array_merge($fields, $this->get_acf_fields(['post_type' => $post_type]));
+                }
                 break;
         }
         return $fields;
