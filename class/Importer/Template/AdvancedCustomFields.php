@@ -128,6 +128,13 @@ class AdvancedCustomFields
                 }
 
                 break;
+            case 'google_map':
+                list($address, $lat, $lng, $zoom) = explode('|', $value);
+                $value = ['address' => trim($address),  'lat' => trim($lat), 'lng' => trim($lng), 'zoom' => trim($zoom)];
+                if (update_field($field_key, $value, $this->prefix($post_id))) {
+                    return $value;
+                }
+                break;
             case 'text':
             default:
                 if (update_field($field_key, $value, $this->prefix($post_id))) {
