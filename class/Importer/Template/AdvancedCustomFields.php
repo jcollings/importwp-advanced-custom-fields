@@ -135,6 +135,12 @@ class AdvancedCustomFields
                     return $value;
                 }
                 break;
+            case 'checkbox':
+                $value = explode(',', $value);
+                if (update_field($field_key, $value, $this->prefix($post_id))) {
+                    return $value;
+                }
+                break;
             case 'text':
             default:
                 if (update_field($field_key, $value, $this->prefix($post_id))) {
