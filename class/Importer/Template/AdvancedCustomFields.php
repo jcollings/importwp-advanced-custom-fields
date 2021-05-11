@@ -175,6 +175,28 @@ class AdvancedCustomFields
                     return $value;
                 }
                 break;
+            case 'taxonomy':
+                $terms = explode(',', $value);
+                $terms = array_filter(array_map('trim', $terms));
+                $taxonomy = $field['taxonomy'];
+                $value = [];
+
+                foreach ($terms as $term) {
+                    $term_result = get_term_by('name', $term, $taxonomy);
+                    if ($term_result) {
+                        $value[] = $term_result->term_id;
+                    }
+                }
+
+                // process values and return serialized array of id's
+                if (count($field_keys) > 1) {
+                    $this->virtual_fields[implode('|', $field_keys)] = $value;
+                    return $value;
+                } elseif (update_field($field_key, $value, $this->prefix($post_id))) {
+                    return $value;
+                }
+
+                break;
             case 'text':
             default:
                 if (count($field_keys) > 1) {
