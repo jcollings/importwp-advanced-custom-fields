@@ -124,6 +124,20 @@ class AdvancedCustomFields
         $field_type = $field['type'];
 
         switch ($field_type) {
+            case 'select':
+
+                if ($field['multiple']) {
+                    $value = explode(',', $value);
+                    $value = array_filter(array_map('trim', $value));
+                }
+
+                if (count($field_keys) > 1) {
+                    $this->virtual_fields[implode('|', $field_keys)] = $value;
+                    return $value;
+                } elseif (update_field($field_key, $value, $this->prefix($post_id))) {
+                    return $value;
+                }
+                break;
             case 'file':
             case 'image':
 
