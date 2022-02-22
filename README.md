@@ -1,14 +1,14 @@
-# ImportWP Advanced Custom Fields Importer
+# Import WP Advanced Custom Fields Importer
 
 ![Advanced Custom Fields Importer](./assets/iwp-addon-acf.png)
 
 ## Description
 
-ImportWP Advanced Custom Fields Importer Addon allows you to import into Advanced Custom Fields generated fields.
+Import WP Advanced Custom Fields Importer Addon allows you to import into Advanced Custom Fields generated fields.
 
-**Version: 2.2.2**
+**Version: 2.3.0**
 
-**This plugin requires ImportWP PRO v2.0.23 or newer**
+**This plugin requires Import WP PRO v2.4.1 or newer**
 
 ## Installation
 
@@ -19,6 +19,38 @@ The Advanced Custom Fields Importer Addon can currently only be installed by dow
 1. Activate the plugin through the ‘Plugins’ menu in WordPress
 
 ## Frequently Asked Questions
+
+### How do i import into a link field
+
+A link field is made up of the following keys (title, url, target).
+
+Enter a single key value pair
+
+```
+url=http://www.example.com
+```
+
+Multiple key value pairs are seperated by |
+
+```
+title=Link Title|url=http://www.example.com
+```
+
+### How do i import into a google maps field
+
+Google maps fields are made up of the fillowing keys (address, lat, lng, zoom)
+
+Enter a single key value pair
+
+```
+address=United Kingdom
+```
+
+Multiple key value pairs are seperated by |
+
+```
+address=United Kingdom|lat=54.219462|lng=-13.4176232|zoom=5
+```
 
 ## Screenshots
 
