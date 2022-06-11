@@ -5,13 +5,13 @@
  * Plugin URI: https://www.importwp.com
  * Description: Allow Import WP to import Advanced Custom Fields.
  * Author: James Collings <james@jclabs.co.uk>
- * Version: 2.3.1 
+ * Version: 2.4.0 
  * Author URI: https://www.importwp.com
  * Network: True
  */
 
-define('IWP_ACF_MIN', '2.4.4');
-define('IWP_ACF_PRO_MIN', '2.4.1');
+define('IWP_ACF_MIN', '2.5.0');
+define('IWP_ACF_PRO_MIN', '2.5.0');
 
 add_action('admin_init', 'iwp_acf_check');
 
@@ -44,6 +44,16 @@ function iwp_acf_setup()
 
     require_once $base_path . '/class/autoload.php';
     require_once $base_path . '/setup.php';
+
+    // Install updater
+    if (file_exists($base_path . '/updater.php') && !class_exists('IWP_Updater')) {
+        require_once $base_path . '/updater.php';
+    }
+
+    if (class_exists('IWP_Updater')) {
+        $updater = new IWP_Updater(__FILE__, 'importwp-advanced-custom-fields');
+        $updater->initialize();
+    }
 }
 add_action('plugins_loaded', 'iwp_acf_setup', 9);
 

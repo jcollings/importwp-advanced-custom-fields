@@ -1,12 +1,15 @@
 # Import WP Advanced Custom Fields Importer
 
+Requires Import WP: 2.5.0  
+Requires Import WP PRO: 2.5.0
+
 ![Advanced Custom Fields Importer](./assets/iwp-addon-acf.png)
 
 ## Description
 
 Import WP Advanced Custom Fields Importer Addon allows you to import into Advanced Custom Fields generated fields.
 
-**Version: 2.3.1**
+**Version: 2.4.0**
 
 **This plugin requires Import WP PRO v2.4.1 or newer**
 

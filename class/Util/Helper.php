@@ -35,6 +35,7 @@ class Helper
     public static function get_acf_fields($args)
     {
         $options = [];
+        $args = apply_filters('iwp_acf/get_fields_filter', $args);
 
         $groups = acf_get_field_groups($args);
         foreach ($groups as $group) {
