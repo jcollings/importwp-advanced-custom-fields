@@ -76,7 +76,8 @@ iwp_register_importer_addon('Advanced Custom Fields', 'advanced-custom-fields', 
             }
 
             $value = iwp_acf_process_field($response, $post_id, $field, $value);
-            update_field($field['key'], $value, $post_id);
+            $object_id = iwp_acf_append_object_prefix($post_id, $response->importer_model());
+            update_field($field['key'], $value, $object_id);
         });
     });
 
@@ -147,7 +148,8 @@ iwp_register_importer_addon('Advanced Custom Fields', 'advanced-custom-fields', 
                         $output[$field['key']] = $field['value'];
                     }
                 }
-                update_field($api->get_panel_id(), $output, $api->object_id());
+                $object_id = iwp_acf_append_object_prefix($api->object_id(), $api->importer_model());
+                update_field($api->get_panel_id(), $output, $object_id);
             });
         }, $panel_settings);
     }
@@ -179,6 +181,22 @@ function iwp_save_group_field($api, $fields, $is_attachment = false)
 
     $value = iwp_acf_process_field($api, $api->object_id(),  $acf_field, $value);
     $api->store_meta($field_id, $value, $api->row());
+}
+
+function iwp_acf_append_object_prefix($id, $importer_model)
+{
+    switch ($importer_model->getTemplate()) {
+        case 'user':
+            return 'user_' . $id;
+            break;
+        case 'term':
+            $taxonomy = $importer_model->getSetting('taxonomy');
+            return $taxonomy . '_' . $id;
+            break;
+        default:
+            return $id;
+            break;
+    }
 }
 
 /**
