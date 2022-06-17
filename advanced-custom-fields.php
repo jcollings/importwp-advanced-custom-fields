@@ -5,7 +5,7 @@
  * Plugin URI: https://www.importwp.com
  * Description: Allow Import WP to import Advanced Custom Fields.
  * Author: James Collings <james@jclabs.co.uk>
- * Version: 2.4.1 
+ * Version: 2.4.2 
  * Author URI: https://www.importwp.com
  * Network: True
  */

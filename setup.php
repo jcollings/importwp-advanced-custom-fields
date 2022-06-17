@@ -227,6 +227,13 @@ function iwp_acf_get_fields($section, $section_type = 'post')
 {
     $options = [];
 
+    if (is_array($section)) {
+        foreach ($section as $item) {
+            $options = array_merge($options, iwp_acf_get_fields($item, $section_type));
+        }
+        return $options;
+    }
+
     switch ($section_type) {
         case 'user':
             $args = ['user_form' => 'all'];
@@ -252,6 +259,22 @@ function iwp_acf_get_fields($section, $section_type = 'post')
     }
     return $options;
 }
+
+function iwp_get_custom_field_key_for_permissions($key)
+{
+    if (strpos($key, 'acf_field::') !== 0) {
+        return $key;
+    }
+    
+    $field_key = substr($key, strrpos($key, '::') + strlen('::'));
+    $field_obj = get_field_object($field_key);
+    if ($field_obj) {
+        return $field_obj['name'];
+    }
+    
+    return $key;
+}
+add_filter('iwp/custom_field_key', 'iwp_get_custom_field_key_for_permissions', 10);
 
 function iwp_acf_get_field_by_key($name, $fields)
 {
