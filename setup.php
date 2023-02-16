@@ -265,13 +265,13 @@ function iwp_get_custom_field_key_for_permissions($key)
     if (strpos($key, 'acf_field::') !== 0) {
         return $key;
     }
-    
+
     $field_key = substr($key, strrpos($key, '::') + strlen('::'));
     $field_obj = get_field_object($field_key);
     if ($field_obj) {
         return $field_obj['name'];
     }
-    
+
     return $key;
 }
 add_filter('iwp/custom_field_key', 'iwp_get_custom_field_key_for_permissions', 10);
@@ -360,15 +360,21 @@ function iwp_acf_process_field($api, $post_id, $field, $value)
             break;
         case 'date_picker':
             // 20220218
-            $value = date('Ymd', strtotime($value));
+            if (!empty($value)) {
+                $value = date('Ymd', strtotime($value));
+            }
             break;
         case 'date_time_picker':
             // 2022-02-18 00:00:00
-            $value = date('Y-m-d H:i:s', strtotime($value));
+            if (!empty($value)) {
+                $value = date('Y-m-d H:i:s', strtotime($value));
+            }
             break;
         case 'time_picker':
             // 00:00:00
-            $value = date('H:i:s', strtotime($value));
+            if (!empty($value)) {
+                $value = date('H:i:s', strtotime($value));
+            }
             break;
         case 'post_object':
             // object_id
@@ -384,7 +390,7 @@ function iwp_acf_process_field($api, $post_id, $field, $value)
             break;
     }
 
-    return apply_filters('iwp/acf/value', $value, $value);
+    return apply_filters('iwp/acf/value', $value, $field, $post_id);
 }
 
 function iwp_acf_parse_serialized_value($value, $defaults = [])
