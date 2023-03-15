@@ -156,6 +156,200 @@ iwp_register_importer_addon('Advanced Custom Fields', 'advanced-custom-fields', 
 });
 
 /**
+ * Pre populate acf repeater and group fields.
+ * 
+ * @since 2.7.2
+ */
+add_filter('iwp/importer/generate_field_map', function ($field_map, $headings, $importer_model) {
+
+    $acf_fields = iwp_acf_fields($importer_model);
+
+    $acf_repeater_fields = array_filter($acf_fields, function ($field) {
+        return in_array($field['type'], ['repeater', 'group']);
+    });
+
+
+    $defaults = [
+        "location" => "",
+        "settings._featured" => "no",
+        "settings._download" => "remote",
+        "settings._ftp_host" => "",
+        "settings._ftp_user" => "",
+        "settings._ftp_pass" => "",
+        "settings._ftp_path" => "",
+        "settings._remote_url" => "",
+        "settings._local_url" => "",
+        "settings._enable_image_hash" => "yes",
+        "settings._delimiter" => "",
+        "settings._meta._enabled" => "no",
+        "settings._meta._alt" => "",
+        "settings._meta._title" => "",
+        "settings._meta._caption" => "",
+        "settings._meta._description" => ""
+    ];
+
+    foreach ($acf_repeater_fields as $repeater_group) {
+
+        $fields = $repeater_group['sub_fields'];
+        $counter = 0;
+        $data = [];
+
+        foreach ($fields as $field) {
+
+            $value = '';
+
+            switch ($field['type']) {
+                case 'image':
+                case 'gallery':
+                case 'file':
+
+                    $index = array_search($repeater_group['name'] . '.' . $field['name'] . '::url', $headings);
+                    if ($index !== false) {
+                        $value = sprintf('{%d}', $index);
+                    } else {
+                        break;
+                    }
+
+                    $tmp = wp_parse_args([
+                        'location' => $value
+                    ], $defaults);
+
+                    $data = array_merge($data, array_reduce(array_keys($tmp), function ($carry, $key) use ($field, $tmp) {
+                        $carry[$field['key'] . '.' . $key] = $tmp[$key];
+                        return $carry;
+                    }, []));
+
+                    $value = '';
+                    break;
+                default:
+                case 'text':
+
+                    $index = array_search($repeater_group['name'] . '.' . $field['name'], $headings);
+                    if ($index !== false) {
+                        $value = sprintf('{%d}', $index);
+                    }
+                    break;
+            }
+
+            if ($value !== '') {
+                $data[$field['key']] = $value;
+            }
+        }
+
+        $row_data = array_reduce(array_keys($data), function ($carry, $key) use ($data, $counter, $repeater_group) {
+            $carry[sprintf('%s.%d.%s', $repeater_group['key'], $counter, $key)] = $data[$key];
+            return $carry;
+        }, []);
+
+        $field_map['map'] = array_merge($field_map['map'], $row_data);
+
+        if (!empty($row_data)) {
+            $counter++;
+            $field_map['map'][$repeater_group['key'] . '._index'] = $counter;
+        }
+    }
+
+    return $field_map;
+}, 9, 3);
+
+/**
+ * Update importer custom field list to use acf key and value.
+ * 
+ * @since 2.7.2
+ */
+add_filter('iwp/importer/generate_field_map/custom_fields', function ($custom_fields, $fields, $importer_model) {
+
+    $acf_fields = iwp_acf_fields($importer_model);
+
+    $acf_custom_fields = array_filter($acf_fields, function ($field) {
+        return !in_array($field['type'], ['repeater', 'group']);
+    });
+
+    foreach ($acf_custom_fields as $field) {
+
+        $value = '';
+        $type = 'text';
+
+        switch ($field['type']) {
+            case 'image':
+            case 'gallery':
+            case 'file':
+
+                $type = 'attachment';
+                $index = array_search('acf.' . $field['name'] . '::url', $fields);
+                if ($index !== false) {
+                    $value = sprintf('{%d}', $index);
+                }
+
+                break;
+            case 'link':
+
+                $parts = [
+                    'title' => '',
+                    'url' => '',
+                    'target' => '',
+                ];
+                $value = iwp_acf_process_field_map_parts($field, $parts, $fields);
+                break;
+            case 'google_map':
+
+                $parts = [
+                    'address' => '',
+                    'lat' => '',
+                    'lng' => '',
+                    'zoom' => ''
+                ];
+                $value = iwp_acf_process_field_map_parts($field, $parts, $fields);
+                break;
+            default:
+            case 'text':
+
+                $index = array_search('acf.' . $field['name'], $fields);
+                if ($index !== false) {
+                    $value = sprintf('{%d}', $index);
+                }
+                break;
+        }
+
+        if ($value !== '') {
+            $custom_fields['acf_field::' . $type . '::' . $field['key']] = $value;
+        }
+    }
+
+    return $custom_fields;
+}, 10, 3);
+
+function iwp_acf_process_field_map_parts($field, $parts, $fields)
+{
+    $value = '';
+
+    foreach (array_keys($parts) as $field_id) {
+        $index = array_search('acf.' . $field['name'] . '::' . $field_id, $fields);
+        if ($index !== false) {
+            $parts[$field_id] = sprintf('{%d}', $index);
+        }
+    }
+
+    $parts = array_reduce(array_keys($parts), function ($carry, $key) use ($parts) {
+        if (!empty($parts[$key])) {
+            $carry[] = $key . '=' . $parts[$key];
+        }
+        return $carry;
+    }, []);
+
+    if (!empty($parts)) {
+        $value = implode('|', $parts);
+    } else {
+        $index = array_search('acf.' . $field['name'], $fields);
+        if ($index !== false) {
+            $value = sprintf('{%d}', $index);
+        }
+    }
+
+    return $value;
+}
+
+/**
  * Undocumented function
  *
  * @param \ImportWP\Common\Addon\AddonFieldDataApi $api
@@ -317,16 +511,16 @@ function iwp_acf_process_field($api, $post_id, $field, $value)
         case 'file':
         case 'image':
 
-            $serialized_id = $api->processAttachmentField($value, $post_id, ['_return' => 'id-serialize']);
+            $serialized_id = $api->processAttachmentField($value, $post_id, ['settings._return' => 'id-serialize']);
             $id_array = maybe_unserialize($serialized_id);
-            if (!empty($id_array) && intval($id_array[0]) > 0) {
-                $value = intval($id_array[0]);
+            if (!empty($id_array)) {
+                $value = is_array($id_array) ? intval($id_array[0]) : intval($id_array);
             }
 
             break;
         case 'gallery':
 
-            $serialized_id = $api->processAttachmentField($value, $post_id, ['_return' => 'id-serialize']);
+            $serialized_id = $api->processAttachmentField($value, $post_id, ['settings._return' => 'id-serialize']);
             $value = maybe_unserialize($serialized_id);
             break;
         case 'link':

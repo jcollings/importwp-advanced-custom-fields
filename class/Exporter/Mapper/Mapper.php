@@ -61,7 +61,9 @@ class Mapper
                     $tmp[] = $acf['name'] . '::url';
                     break;
                 default:
-                    $tmp[] = $acf['name'];
+                    if (!empty($acf['name'])) {
+                        $tmp[] = $acf['name'];
+                    }
                     break;
             }
         }
@@ -229,7 +231,7 @@ class Mapper
 
             $record[$repeater_field['name']] = [];
 
-            $repeater_data = get_field('repeater_test', $record['ID']);
+            $repeater_data = get_field($repeater_field['key'], $record['ID']);
             if (!empty($repeater_data)) {
                 foreach ($repeater_data as $repeater_row) {
                     $record[$repeater_field['name']][] = $this->load_field_data($repeater_field['sub_fields'], $repeater_row);

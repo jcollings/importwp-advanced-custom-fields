@@ -1,6 +1,6 @@
 # Import WP Advanced Custom Fields Importer
 
-Version: 2.5.0  
+Version: 2.5.1  
 Requires Import WP: 2.5.0  
 Requires Import WP PRO: 2.5.0
 
@@ -55,6 +55,12 @@ address=United Kingdom|lat=54.219462|lng=-13.4176232|zoom=5
 ## Screenshots
 
 ## Changelog
+
+### 2.5.1
+
+- FIX - skip fields with empty names e.g. tabs.
+- FIX - Attachment \_return value should be settings.\_return
+- ADD - Allow importer to pre populate fields from csv using default exported field names.
 
 ### 2.5.0
 
