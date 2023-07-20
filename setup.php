@@ -572,6 +572,16 @@ function iwp_acf_process_field($api, $post_id, $field, $value)
             break;
         case 'post_object':
             // object_id
+            if (isset($field['multiple']) && $field['multiple'] === 1) {
+
+                if (!is_array($value)) {
+                    $value = explode($delimiter, $value);
+                }
+
+                $value = array_map('intval', $value);
+            } else {
+                $value = intval($value);
+            }
             break;
         case 'relationship':
             // [object_id]
