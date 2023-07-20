@@ -1,6 +1,6 @@
 # Import WP Advanced Custom Fields Importer
 
-Version: 2.5.1  
+Version: __STABLE_TAG__  
 Requires Import WP: 2.5.0  
 Requires Import WP PRO: 2.5.0
 
