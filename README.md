@@ -56,6 +56,10 @@ address=United Kingdom|lat=54.219462|lng=-13.4176232|zoom=5
 
 ## Changelog
 
+### 2.5.2
+
+- FIX - Update delimiter filter to use field name instead of field id.
+
 ### 2.5.1
 
 - FIX - skip fields with empty names e.g. tabs.

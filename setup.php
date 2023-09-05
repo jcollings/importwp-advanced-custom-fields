@@ -494,7 +494,7 @@ function iwp_acf_process_field($api, $post_id, $field, $value)
 {
     $delimiter = apply_filters('iwp/value_delimiter', ',');
     $delimiter = apply_filters('iwp/acf/value_delimiter', $delimiter);
-    $delimiter = apply_filters('iwp/acf/' . trim($field['id']) . '/value_delimiter', $delimiter);
+    $delimiter = apply_filters('iwp/acf/' . trim($field['name']) . '/value_delimiter', $delimiter);
 
     switch ($field['type']) {
         case 'select':
